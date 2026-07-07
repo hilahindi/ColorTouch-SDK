@@ -23,6 +23,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -33,7 +34,6 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -275,7 +275,14 @@ private fun DeepDivePromptContent(onContinue: () -> Unit, onSkip: () -> Unit) {
             Text("Continue to 10 more questions")
         }
         Spacer(modifier = Modifier.height(8.dp))
-        TextButton(modifier = Modifier.fillMaxWidth(), onClick = onSkip) {
+        Button(
+            modifier = Modifier.fillMaxWidth(),
+            onClick = onSkip,
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+            ),
+        ) {
             Text("Skip and get my palette")
         }
     }

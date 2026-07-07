@@ -45,13 +45,3 @@ coordinates instead.
 
 `jitpack.yml` at the repo root pins the build JDK to 17 (required by AGP
 8.13.x).
-
-## History
-
-This repo was split out of a combined `ColorTouch` monorepo (which also
-contained the backend server + developer portal, now at
-[ColorTouch-System](https://github.com/hilahindi/ColorTouch-System)) once
-both halves were independently stable, matching the course's convention of
-one repo per deployable concern. The original `v0.1.0` build lives at
-`com.github.hilahindi:ColorTouch:v0.1.0` — kept working, permanently cached
-by Jitpack — but all new versions are published from here instead.

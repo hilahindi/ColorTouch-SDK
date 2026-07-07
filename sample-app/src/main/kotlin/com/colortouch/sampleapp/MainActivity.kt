@@ -23,7 +23,7 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Settings
-import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
@@ -34,7 +34,6 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
@@ -127,8 +126,19 @@ private fun ColorTouchDemoApp() {
     var favoriteRecipeIds by remember { mutableStateOf(setOf<String>()) }
     var selectedRecipeId by remember { mutableStateOf<String?>(null) }
 
+    // Computed once here (rather than inside MainAppShell) so the
+    // questionnaire sheet below can be wrapped in the same palette-driven
+    // theme as the rest of the app, instead of falling back to the
+    // undyed default MaterialTheme from onCreate.
+    val useDarkTheme = isSystemInDarkTheme()
+    val colorScheme = remember(currentPalette, useDarkTheme) {
+        currentPalette?.colors?.toComposeColorScheme(useDarkTheme)
+            ?: if (useDarkTheme) darkColorScheme() else lightColorScheme()
+    }
+
     MainAppShell(
         palette = currentPalette,
+        colorScheme = colorScheme,
         favoriteRecipeIds = favoriteRecipeIds,
         onToggleFavorite = { id ->
             favoriteRecipeIds = if (id in favoriteRecipeIds) {
@@ -145,38 +155,40 @@ private fun ColorTouchDemoApp() {
     )
 
     if (showQuestionnaire) {
-        QuestionnaireBottomSheet(
-            questions = questions,
-            isSubmitting = isSubmitting,
-            errorMessage = errorMessage,
-            onDismiss = { showQuestionnaire = false },
-            onSubmit = { responses ->
-                errorMessage = null
-                isSubmitting = true
-                coroutineScope.launch {
-                    // A fresh id per submission, not one stable id per app
-                    // session: the server caches PersonalizedPalette results
-                    // by userId indefinitely (no cache_control.ttl_seconds is
-                    // set), so reusing one id across resubmits would just
-                    // replay the first result even after changing answers.
-                    // Fine for this demo/testing app — a real integrator
-                    // should keep one stable id per actual end user instead.
-                    val submissionUserId = UUID.randomUUID().toString()
-                    when (val result = fetchPersonalizedPalette(submissionUserId, responses)) {
-                        is ColorTouchResult.Success -> {
-                            // currentPalette updates automatically via the
-                            // SDK's StateFlow — no local assignment needed.
-                            showQuestionnaire = false
+        MaterialTheme(colorScheme = colorScheme) {
+            QuestionnaireBottomSheet(
+                questions = questions,
+                isSubmitting = isSubmitting,
+                errorMessage = errorMessage,
+                onDismiss = { showQuestionnaire = false },
+                onSubmit = { responses ->
+                    errorMessage = null
+                    isSubmitting = true
+                    coroutineScope.launch {
+                        // A fresh id per submission, not one stable id per app
+                        // session: the server caches PersonalizedPalette results
+                        // by userId indefinitely (no cache_control.ttl_seconds is
+                        // set), so reusing one id across resubmits would just
+                        // replay the first result even after changing answers.
+                        // Fine for this demo/testing app — a real integrator
+                        // should keep one stable id per actual end user instead.
+                        val submissionUserId = UUID.randomUUID().toString()
+                        when (val result = fetchPersonalizedPalette(submissionUserId, responses)) {
+                            is ColorTouchResult.Success -> {
+                                // currentPalette updates automatically via the
+                                // SDK's StateFlow — no local assignment needed.
+                                showQuestionnaire = false
+                            }
+                            is ColorTouchResult.ApiError ->
+                                errorMessage = "Error ${result.code}: ${result.message}"
+                            is ColorTouchResult.NetworkError ->
+                                errorMessage = "Network error: ${result.cause.message}"
                         }
-                        is ColorTouchResult.ApiError ->
-                            errorMessage = "Error ${result.code}: ${result.message}"
-                        is ColorTouchResult.NetworkError ->
-                            errorMessage = "Network error: ${result.cause.message}"
+                        isSubmitting = false
                     }
-                    isSubmitting = false
-                }
-            },
-        )
+                },
+            )
+        }
     }
 }
 
@@ -215,6 +227,7 @@ private val DEMO_TABS = listOf(
 @Composable
 private fun MainAppShell(
     palette: PaletteResponse?,
+    colorScheme: ColorScheme,
     favoriteRecipeIds: Set<String>,
     onToggleFavorite: (String) -> Unit,
     selectedRecipeId: String?,
@@ -223,12 +236,6 @@ private fun MainAppShell(
     onFabClick: () -> Unit,
     onResetToDefault: () -> Unit,
 ) {
-    val useDarkTheme = isSystemInDarkTheme()
-    val colorScheme = remember(palette, useDarkTheme) {
-        palette?.colors?.toComposeColorScheme(useDarkTheme)
-            ?: if (useDarkTheme) darkColorScheme() else lightColorScheme()
-    }
-
     var selectedTab by remember { mutableStateOf(0) }
 
     val fabScale = remember { Animatable(1f) }
@@ -254,21 +261,6 @@ private fun MainAppShell(
                 )
             } else {
                 Scaffold(
-                    topBar = {
-                        CenterAlignedTopAppBar(
-                            title = {
-                                Text(
-                                    "ColorTouch Recipes",
-                                    style = MaterialTheme.typography.titleLarge,
-                                    fontWeight = FontWeight.Bold,
-                                )
-                            },
-                            colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                                containerColor = MaterialTheme.colorScheme.primary,
-                                titleContentColor = MaterialTheme.colorScheme.onPrimary,
-                            ),
-                        )
-                    },
                     bottomBar = {
                         NavigationBar(containerColor = MaterialTheme.colorScheme.surface) {
                             DEMO_TABS.forEachIndexed { index, tab ->
