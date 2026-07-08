@@ -50,7 +50,7 @@ android {
 // a pushed git tag, so groupId/artifactId/version here only need to be valid
 // Maven coordinates — Jitpack ignores them and derives the actual consumer
 // coordinate from the GitHub path instead (com.github.hilahindi:ColorTouch,
-// module colortouch-sdk, version = the tag name). See ../JITPACK.md.
+// module colortouch-sdk, version = the tag name). See ../docs/JITPACK.md.
 afterEvaluate {
     publishing {
         publications {

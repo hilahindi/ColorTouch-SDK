@@ -7,7 +7,7 @@ locally. A release is just a pushed git tag.
 
 1. Bump `version` in `colortouch-sdk/build.gradle.kts` (follow
    [semver](https://semver.org/): MAJOR.MINOR.PATCH) and add an entry to
-   `colortouch-sdk/CHANGELOG.md`.
+   `docs/CHANGELOG.md`.
 2. Commit that change.
 3. Tag the commit with the same version and push the tag:
    ```bash
