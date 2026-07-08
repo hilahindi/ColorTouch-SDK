@@ -2,6 +2,7 @@
 
 **Seminar Project — 10221 Advanced Seminar in Mobile Development**
 **Afeka College of Engineering**
+
 **Student:** Hila Hindi
 
 Android library (Kotlin + Jetpack Compose) that fetches a Material3 color
