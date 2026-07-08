@@ -11,7 +11,7 @@ plugins {
 // PATCH for backwards-compatible fixes. Consumers (sample-app, Jitpack
 // releases) reference this via a git tag of the same value — see the
 // project's Jitpack setup notes for the tag-per-release convention.
-version = "0.1.0"
+version = "0.1.1"
 
 android {
     namespace = "com.colortouch.sdk"

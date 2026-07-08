@@ -51,7 +51,7 @@ dependencyResolutionManagement {
 ```kotlin
 // app/build.gradle.kts
 dependencies {
-    implementation("com.github.hilahindi:ColorTouch-SDK:v0.1.0")
+    implementation("com.github.hilahindi:ColorTouch-SDK:v0.1.1")
 }
 ```
 

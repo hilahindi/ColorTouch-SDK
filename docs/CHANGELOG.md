@@ -4,6 +4,12 @@ All notable changes to the ColorTouch Android SDK are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 versioning follows [Semantic Versioning](https://semver.org/).
 
+## [0.1.1] - 2026-07-08
+
+### Changed
+- Sample app: live-themed questionnaire screen, removed redundant top bar.
+- Docs overhaul (README, Jitpack setup notes) and added demo screenshots.
+
 ## [0.1.0] - 2026-07-07
 
 ### Added
